@@ -3,7 +3,7 @@ Sampling Based Adaptive Motion Planning
 
 ### Steps to run:
 
-```
+```bash
 git clone --recurse-submodules https://github.com/Shreyas0812/SBAMP.git
 ```
 
