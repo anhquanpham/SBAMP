@@ -3,6 +3,8 @@ Sampling Based Adaptive Motion Planning
 
 ### Steps to run:
 
+Note: Make sure you are at the correct location as given by the text before `$`
+
 ```bash
 git clone --recurse-submodules https://github.com/Shreyas0812/SBAMP.git
 ```
@@ -20,4 +22,15 @@ $ source /opt/ros/humble/setup.bash
 $ colcon build
 $ source install/local_setup.bash
 $ ros2 launch f1tenth_gym_ros gym_bridge_launch.py
+```
+
+```bash
+/SBAMP/src/sbamp/scripts$ chmod +x sbamp_node.py 
+```
+
+```bash
+/SBAMP$ colcon build
+/SBAMP$ source install/local_setup.bash 
+/SBAMP$ source install/setup.bash 
+/SBAMP$ ros2 launch sbamp sbamp.launch.py 
 ```
