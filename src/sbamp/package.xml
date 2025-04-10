@@ -5,6 +5,8 @@
   <version>0.0.0</version>
   <description>Sampling Based Adaptive Motion Planning</description>
   <maintainer email="raorane@seas.upenn.edu">shreyas</maintainer>
+  <maintainer email="kapuri@seas.upenn.edu">kaRpuri</maintainer>
+  <maintainer email="quanpham@seas.upenn.edu">Quan</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
