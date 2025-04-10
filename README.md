@@ -46,3 +46,9 @@ Visualization Node:
 ```bash
 /SBAMP/src/sbamp/scripts$ chmod +x visualization_node.py 
 ```
+
+To run with visualization:
+
+```bash
+/SBAMP$ ros2 launch sbamp sbamp_visualization.launch.py 
+```
