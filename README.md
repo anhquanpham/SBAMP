@@ -35,6 +35,12 @@ $ ros2 launch f1tenth_gym_ros gym_bridge_launch.py
 /SBAMP$ ros2 launch sbamp sbamp.launch.py 
 ```
 
+If there is an error running any of the above commands, run this and try again:
+
+```bash
+/SBAMP$ rosdep install --from-paths src -y --ignore-src
+```
+
 Visualization Node:
 
 ```bash
