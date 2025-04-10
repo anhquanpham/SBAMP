@@ -10,15 +10,21 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(tf2_ros)
 
 # CPP
 include_directories(include)
 
 add_executable(sbamp_node src/sbamp_node.cpp)
-ament_target_dependencies(sbamp_node rclcpp)
+ament_target_dependencies(sbamp_node 
+  rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs visualization_msgs tf2_ros
+  )
 
 install(TARGETS
   sbamp_node
@@ -30,11 +36,18 @@ ament_python_install_package(${PROJECT_NAME})
 
 install(PROGRAMS
   scripts/sbamp_node.py
+  scripts/visualization_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
 # Launch
 install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Config Files
+install(DIRECTORY 
+  config/
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+
+import rclpy
+from rclpy.node import Node
+
+class VisualizationNode(Node):
+    def __init__(self):
+        super().__init__("visualization_node")
+        self.get_logger().info("Python visualization_node has been started.")
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = VisualizationNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()

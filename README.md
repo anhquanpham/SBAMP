@@ -34,3 +34,9 @@ $ ros2 launch f1tenth_gym_ros gym_bridge_launch.py
 /SBAMP$ source install/setup.bash 
 /SBAMP$ ros2 launch sbamp sbamp.launch.py 
 ```
+
+Visualization Node:
+
+```bash
+/SBAMP/src/sbamp/scripts$ chmod +x visualization_node.py 
+```
