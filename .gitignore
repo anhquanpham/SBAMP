@@ -4,3 +4,7 @@
 
 **/build/**
 **/install/**
+
+
+# Add Later as submodules
+src/sbamp/sbamp/ds-opt-py/
