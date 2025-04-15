@@ -11,8 +11,8 @@ def generate_launch_description():
         ),
         Node(
             package="sbamp",
-            executable="visualization_node.py",
-            name="visualization_node",
+            executable="visualize_node.py",
+            name="visualize_node",
             output="screen",
         )
     ])
