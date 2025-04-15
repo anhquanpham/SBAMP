@@ -14,5 +14,13 @@ def generate_launch_description():
             executable="visualize_node.py",
             name="visualize_node",
             output="screen",
+            parameters=[
+                {"waypoint_file_name": "waypoints_levine.csv"},
+                {"pose_topic": "/ego_racecar/odom"},
+                {"visualize_wp_topic": "/visualization/waypoints"},
+                {"next_wp_topic": "/visualization/next_waypoint"},
+                {"lookahead_distance": 0.8},
+                {"y_ego_threshold": 1.2}
+            ]
         )
     ])
