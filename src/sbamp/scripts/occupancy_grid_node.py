@@ -9,6 +9,7 @@ from nav_msgs.msg import Odometry
 from nav_msgs.msg import OccupancyGrid
 
 import numpy as np
+from transforms3d.euler import quat2euler
 
 class OccupancyGridNode(Node):
     def __init__(self):
@@ -37,7 +38,9 @@ class OccupancyGridNode(Node):
         qos_profile = QoSProfile(depth=10)
 
         # self.scan_subscriber_ = self.create_subscription(LaserScan, scan_topic, self.scan_callback, qos_profile) 
-        # self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
+        
+        # NOTE: self.cur_pos and self.cur_yaw is defined and set inside pose_callback
+        self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
 
         map_qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
@@ -45,7 +48,7 @@ class OccupancyGridNode(Node):
             depth=1
         )
 
-        # NOTE: self.occupancy_grid is defined inside map_callback
+        # NOTE: self.occupancy_grid is defined and set inside map_callback
         self.map_subscriber_ = self.create_subscription(OccupancyGrid, original_map_topic, self.map_callback, map_qos_profile)
 
     def scan_callback(self, msg):
@@ -53,9 +56,15 @@ class OccupancyGridNode(Node):
         self.get_logger().info(f"Received scan data with {len(msg.ranges)} ranges.")
         
 
-    def pose_callback(self, msg):
+    def pose_callback(self, pose_msg):
         # Process the Odometry message
-        self.get_logger().info(f"Received pose data: position ({msg.pose.pose.position.x}, {msg.pose.pose.position.y}), orientation ({msg.pose.pose.orientation.x}, {msg.pose.pose.orientation.y}, {msg.pose.pose.orientation.z}, {msg.pose.pose.orientation.w})")
+        self.cur_pos = (pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y)
+        self.cur_yaw = quat2euler([pose_msg.pose.pose.orientation.x,
+                                          pose_msg.pose.pose.orientation.y,
+                                          pose_msg.pose.pose.orientation.z,
+                                          pose_msg.pose.pose.orientation.w])[2]
+
+        # self.get_logger().info(f"Received pose data: {self.cur_pos}, yaw: {self.cur_yaw}")
 
     def map_callback(self, msg):
         # Process the map message
