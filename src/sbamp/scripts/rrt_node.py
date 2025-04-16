@@ -4,9 +4,10 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 
-from nav_msgs.msg import OccupancyGrid
+from nav_msgs.msg import OccupancyGrid, Odometry
 
 import numpy as np
+from transforms3d.euler import quat2euler
 
 class RRTNode(Node):
     def __init__(self):
@@ -39,6 +40,12 @@ class RRTNode(Node):
         # NOTE: self.occupancy_grid is defined and set inside occupancy_grid_callback
         self.occupancy_grid_subscriber_ = self.create_subscription(OccupancyGrid, occupancy_grid_topic, self.occupancy_grid_callback, occupancy_grid_qos_profile)
 
+
+        qos_profile = QoSProfile(depth=10)
+
+        # NOTE: self.cur_pos and self.cur_yaw is defined and set inside pose_callback
+        self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
+
     def occupancy_grid_callback(self, occ_grid_msg):
         
         self.map_height = occ_grid_msg.info.height
@@ -55,7 +62,15 @@ class RRTNode(Node):
         #                        f"origin: {self.map_origin}"
         #                        )
 
-
+    def pose_callback(self, pose_msg):
+        # Process the Odometry message
+        self.cur_pos = (pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y)
+        self.cur_yaw = quat2euler([pose_msg.pose.pose.orientation.w,
+                                          pose_msg.pose.pose.orientation.x,
+                                          pose_msg.pose.pose.orientation.y,
+                                          pose_msg.pose.pose.orientation.z])[2]
+        
+        
     
 
 def main(args=None):
