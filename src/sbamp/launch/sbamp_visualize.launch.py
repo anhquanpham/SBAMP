@@ -3,12 +3,14 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
+        # SBAMP node
         Node(
             package="sbamp",
             executable="sbamp_node.py",
             name="sbamp_node",
             output="screen",
         ),
+        # Visualize node
         Node(
             package="sbamp",
             executable="visualize_node.py",
@@ -22,5 +24,19 @@ def generate_launch_description():
                 {"lookahead_distance": 0.8},
                 {"y_ego_threshold": 1.2}
             ]
-        )
+        ),
+        # RRT node
+        Node(
+            package="sbamp",
+            executable="rrt_node.py",
+            name="rrt_node",
+            output="screen",
+        ),
+        # Occupancy grid node
+        Node(
+            package="sbamp",
+            executable="occupancy_grid_node.py",
+            name="occupancy_grid_node",
+            output="screen",
+        ),
     ])

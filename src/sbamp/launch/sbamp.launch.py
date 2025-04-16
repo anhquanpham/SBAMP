@@ -17,4 +17,18 @@ def generate_launch_description():
         #     name="sbamp_node",
         #     output="screen",
         # )
+        # RRT node
+        Node(
+            package="sbamp",
+            executable="rrt_node.py",
+            name="rrt_node",
+            output="screen",
+        ),
+        # Occupancy grid node
+        Node(
+            package="sbamp",
+            executable="occupancy_grid_node.py",
+            name="occupancy_grid_node",
+            output="screen",
+        ),
     ])
