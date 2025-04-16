@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy, QoSHistoryPolicy
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 
 class RRTNode(Node):
     def __init__(self):
@@ -19,7 +19,7 @@ class RRTNode(Node):
             durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
             depth=1
         )
-        
+
         # ADD CODE TO GET OCCUPANCY GRID AND POSE HERE
 
     
