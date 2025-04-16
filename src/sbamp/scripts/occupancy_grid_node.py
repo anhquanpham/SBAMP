@@ -55,15 +55,15 @@ class OccupancyGridNode(Node):
         self.scan_subscriber_ = self.create_subscription(LaserScan, scan_topic, self.scan_callback, qos_profile)         
 
 
-    def map_callback(self, msg):
+    def map_callback(self, map_msg):
         # Process the map message
 
-        self.map_height = msg.info.height
-        self.map_width = msg.info.width
-        self.map_resolution = msg.info.resolution
-        self.map_origin = (msg.info.origin.position.x, msg.info.origin.position.y)
+        self.map_height = map_msg.info.height
+        self.map_width = map_msg.info.width
+        self.map_resolution = map_msg.info.resolution
+        self.map_origin = (map_msg.info.origin.position.x, map_msg.info.origin.position.y)
 
-        self.occupancy_grid = np.array(msg.data).reshape((self.map_height, self.map_width))
+        self.occupancy_grid = np.array(map_msg.data).reshape((self.map_height, self.map_width))
 
         self.get_logger().info(f"Received map and occupancy_grid set: \n"
                                f"height: {self.map_height}, width: {self.map_width},\n"
@@ -80,10 +80,10 @@ class OccupancyGridNode(Node):
                                           pose_msg.pose.pose.orientation.w])[2]
 
         # self.get_logger().info(f"Received pose data: {self.cur_pos}, yaw: {self.cur_yaw}")
-        
-    def scan_callback(self, msg):
+
+    def scan_callback(self, scan_msg):
         # Process the LaserScan message
-        self.get_logger().info(f"Received scan data with {len(msg.ranges)} ranges.")
+        self.get_logger().info(f"Received scan data with {len(scan_msg.ranges)} ranges.")
         
 
 
