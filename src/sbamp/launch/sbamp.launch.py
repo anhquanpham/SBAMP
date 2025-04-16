@@ -17,4 +17,11 @@ def generate_launch_description():
         #     name="sbamp_node",
         #     output="screen",
         # )
+        # RRT node
+        Node(
+            package="sbamp",
+            executable="rrt_node.py",
+            name="rrt_node",
+            output="screen",
+        ),
     ])

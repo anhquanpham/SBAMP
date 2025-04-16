@@ -36,6 +36,7 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   scripts/sbamp_node.py
   scripts/visualize_node.py
+  scripts/rrt_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
