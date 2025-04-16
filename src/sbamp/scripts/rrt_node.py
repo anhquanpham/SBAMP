@@ -69,9 +69,22 @@ class RRTNode(Node):
                                           pose_msg.pose.pose.orientation.x,
                                           pose_msg.pose.pose.orientation.y,
                                           pose_msg.pose.pose.orientation.z])[2]
+
+        if not hasattr(self, 'occupancy_grid'):
+            self.get_logger().error("Occupancy grid not received yet.")
+            return
         
-        
-    
+
+        self.get_logger().info("Occupancy grid received, proceeding with RRT algorithm.")
+        # Implement RRT algorithm here using self.occupancy_grid and self.cur_pos
+        # For now, target a point 5 meters ahead in the direction of the current yaw
+        target_x = self.cur_pos[0] + 5 * np.cos(self.cur_yaw)
+        target_y = self.cur_pos[1] + 5 * np.sin(self.cur_yaw)
+        target = (target_x, target_y)
+
+        self.get_logger().info(f"Target point: {target}, cur_pos: {self.cur_pos}")
+
+        # Implement RRT algorithm here
 
 def main(args=None):
     rclpy.init(args=args)
