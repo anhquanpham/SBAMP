@@ -35,13 +35,7 @@ class OccupancyGridNode(Node):
         self.map_origin = self.get_parameter('map_origin').get_parameter_value().double_array_value
        
         # Subscribers
-        qos_profile = QoSProfile(depth=10)
-
-        # self.scan_subscriber_ = self.create_subscription(LaserScan, scan_topic, self.scan_callback, qos_profile) 
         
-        # NOTE: self.cur_pos and self.cur_yaw is defined and set inside pose_callback
-        self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
-
         map_qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
             durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
@@ -50,6 +44,16 @@ class OccupancyGridNode(Node):
 
         # NOTE: self.occupancy_grid is defined and set inside map_callback
         self.map_subscriber_ = self.create_subscription(OccupancyGrid, original_map_topic, self.map_callback, map_qos_profile)
+
+
+        qos_profile = QoSProfile(depth=10)
+
+        # NOTE: self.cur_pos and self.cur_yaw is defined and set inside pose_callback
+        self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
+
+        # NOTE: self.occupancy_grid is updated and published inside scan_callback
+        self.scan_subscriber_ = self.create_subscription(LaserScan, scan_topic, self.scan_callback, qos_profile)         
+
 
     def scan_callback(self, msg):
         # Process the LaserScan message
