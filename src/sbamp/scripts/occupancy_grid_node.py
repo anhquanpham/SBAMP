@@ -55,21 +55,6 @@ class OccupancyGridNode(Node):
         self.scan_subscriber_ = self.create_subscription(LaserScan, scan_topic, self.scan_callback, qos_profile)         
 
 
-    def scan_callback(self, msg):
-        # Process the LaserScan message
-        self.get_logger().info(f"Received scan data with {len(msg.ranges)} ranges.")
-        
-
-    def pose_callback(self, pose_msg):
-        # Process the Odometry message
-        self.cur_pos = (pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y)
-        self.cur_yaw = quat2euler([pose_msg.pose.pose.orientation.x,
-                                          pose_msg.pose.pose.orientation.y,
-                                          pose_msg.pose.pose.orientation.z,
-                                          pose_msg.pose.pose.orientation.w])[2]
-
-        # self.get_logger().info(f"Received pose data: {self.cur_pos}, yaw: {self.cur_yaw}")
-
     def map_callback(self, msg):
         # Process the map message
 
@@ -85,6 +70,23 @@ class OccupancyGridNode(Node):
                                f"resolution: {self.map_resolution}, \n"
                                f"origin: {self.map_origin}"
                                )
+        
+    def pose_callback(self, pose_msg):
+        # Process the Odometry message
+        self.cur_pos = (pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y)
+        self.cur_yaw = quat2euler([pose_msg.pose.pose.orientation.x,
+                                          pose_msg.pose.pose.orientation.y,
+                                          pose_msg.pose.pose.orientation.z,
+                                          pose_msg.pose.pose.orientation.w])[2]
+
+        # self.get_logger().info(f"Received pose data: {self.cur_pos}, yaw: {self.cur_yaw}")
+        
+    def scan_callback(self, msg):
+        # Process the LaserScan message
+        self.get_logger().info(f"Received scan data with {len(msg.ranges)} ranges.")
+        
+
+
 
        
 
