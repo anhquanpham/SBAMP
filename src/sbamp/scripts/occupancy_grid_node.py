@@ -140,7 +140,7 @@ class OccupancyGridNode(Node):
         self.occupancy_grid = updated_occupancy_grid
         self.publish_occupancy_grid()
 
-        self.get_logger().info(f"Updated occupancy grid with scan data at position: {self.cur_pos}, yaw: {self.cur_yaw}")
+        # self.get_logger().info(f"Updated occupancy grid with scan data at position: {self.cur_pos}, yaw: {self.cur_yaw}")
 
     def publish_occupancy_grid(self):
         # Create and publish the updated occupancy grid
