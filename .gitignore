@@ -5,6 +5,7 @@
 **/build/**
 **/install/**
 
+**/__pycache__/**
 
 # Add Later as submodules
 src/sbamp/sbamp/ds_opt_py/
