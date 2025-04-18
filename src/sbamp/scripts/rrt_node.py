@@ -77,7 +77,7 @@ class RRTNode(Node):
 
     def pose_callback(self, pose_msg):
         # Process the Odometry message
-        self.cur_pos = (pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y)
+        self.cur_pos = np.array([pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y])
         self.cur_yaw = quat2euler([pose_msg.pose.pose.orientation.w,
                                           pose_msg.pose.pose.orientation.x,
                                           pose_msg.pose.pose.orientation.y,
@@ -91,7 +91,11 @@ class RRTNode(Node):
             self.get_logger().error("Next waypoint not received yet.")
             return
 
-        self.get_logger().info("Occupancy grid and next waypoint received, proceeding with RRT algorithm.")
+        # current position: self.cur_pos
+        # current yaw: self.cur_yaw
+        # occupancy grid: self.occupancy_grid
+        # next waypoint: self.next_waypoint
+
         # Implement RRT algorithm here
 
 
