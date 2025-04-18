@@ -5,6 +5,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 
 from nav_msgs.msg import OccupancyGrid, Odometry
+from geometry_msgs.msg import PointStamped
 
 import numpy as np
 from transforms3d.euler import quat2euler
@@ -16,6 +17,7 @@ class RRTNode(Node):
 
         self.declare_parameter('pose_topic', '/ego_racecar/odom')
         self.declare_parameter('occupancy_grid_topic', '/occupancy_grid')
+        self.declare_parameter('next_waypoint_topic', '/next_waypoint')
 
         self.declare_parameter('map_height', 713)
         self.declare_parameter('map_width', 727)
@@ -24,13 +26,13 @@ class RRTNode(Node):
 
         pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
         occupancy_grid_topic = self.get_parameter('occupancy_grid_topic').get_parameter_value().string_value
+        next_waypoint_topic = self.get_parameter('next_waypoint_topic').get_parameter_value().string_value
 
         self.map_height = self.get_parameter('map_height').get_parameter_value().integer_value
         self.map_width = self.get_parameter('map_width').get_parameter_value().integer_value
         self.map_resolution = self.get_parameter('map_resolution').get_parameter_value().double_value
         self.map_origin = self.get_parameter('map_origin').get_parameter_value().double_array_value
-
-
+        
         occupancy_grid_qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
             durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
@@ -43,11 +45,15 @@ class RRTNode(Node):
 
         qos_profile = QoSProfile(depth=10)
 
+        # NOTE: 
+        self.next_waypoint_subscriber_ = self.create_subscription(PointStamped, next_waypoint_topic, self.next_waypoint_callback, qos_profile)
+
         # NOTE: self.cur_pos and self.cur_yaw is defined and set inside pose_callback
         self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
 
+
     def occupancy_grid_callback(self, occ_grid_msg):
-        
+        # Process the OccupancyGrid message
         self.map_height = occ_grid_msg.info.height
         self.map_width = occ_grid_msg.info.width
         self.map_resolution = occ_grid_msg.info.resolution
@@ -62,6 +68,13 @@ class RRTNode(Node):
         #                        f"origin: {self.map_origin}"
         #                        )
 
+    def next_waypoint_callback(self, waypoint_msg):
+        # Process the PointStamped message
+        self.next_waypoint = np.array([waypoint_msg.point.x, waypoint_msg.point.y])
+        
+        # self.get_logger().info(f"Next waypoint received: {self.next_waypoint}")
+        
+
     def pose_callback(self, pose_msg):
         # Process the Odometry message
         self.cur_pos = (pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y)
@@ -74,17 +87,13 @@ class RRTNode(Node):
             self.get_logger().error("Occupancy grid not received yet.")
             return
         
+        if not hasattr(self, 'next_waypoint'):
+            self.get_logger().error("Next waypoint not received yet.")
+            return
 
-        # self.get_logger().info("Occupancy grid received, proceeding with RRT algorithm.")
-        # Implement RRT algorithm here using self.occupancy_grid and self.cur_pos
-        # For now, target a point 5 meters ahead in the direction of the current yaw
-        target_x = self.cur_pos[0] + 5 * np.cos(self.cur_yaw)
-        target_y = self.cur_pos[1] + 5 * np.sin(self.cur_yaw)
-        target = (target_x, target_y)
-
-        # self.get_logger().info(f"Target point: {target}, cur_pos: {self.cur_pos}")
-
+        self.get_logger().info("Occupancy grid and next waypoint received, proceeding with RRT algorithm.")
         # Implement RRT algorithm here
+
 
 def main(args=None):
     rclpy.init(args=args)
