@@ -38,6 +38,7 @@ install(PROGRAMS
   scripts/visualize_node.py
   scripts/rrt_node.py
   scripts/occupancy_grid_node.py
+  scripts/next_waypoint_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
