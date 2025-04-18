@@ -31,4 +31,11 @@ def generate_launch_description():
             name="occupancy_grid_node",
             output="screen",
         ),
+        # Next waypoint node
+        Node(
+            package="sbamp",
+            executable="next_waypoint_node.py",
+            name="next_waypoint_node",
+            output="screen",
+        ),
     ])
