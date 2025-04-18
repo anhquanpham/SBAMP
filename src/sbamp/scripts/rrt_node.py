@@ -17,7 +17,7 @@ class RRTNode(Node):
 
         self.declare_parameter('pose_topic', '/ego_racecar/odom')
         self.declare_parameter('occupancy_grid_topic', '/occupancy_grid')
-        self.declare_parameter('next_waypoint_topic', '/next_waypoint')
+        self.declare_parameter('next_wp_topic', '/next_waypoint')
 
         self.declare_parameter('map_height', 713)
         self.declare_parameter('map_width', 727)
@@ -26,7 +26,7 @@ class RRTNode(Node):
 
         pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
         occupancy_grid_topic = self.get_parameter('occupancy_grid_topic').get_parameter_value().string_value
-        next_waypoint_topic = self.get_parameter('next_waypoint_topic').get_parameter_value().string_value
+        next_wp_topic = self.get_parameter('next_wp_topic').get_parameter_value().string_value
 
         self.map_height = self.get_parameter('map_height').get_parameter_value().integer_value
         self.map_width = self.get_parameter('map_width').get_parameter_value().integer_value
@@ -46,7 +46,7 @@ class RRTNode(Node):
         qos_profile = QoSProfile(depth=10)
 
         # NOTE: 
-        self.next_waypoint_subscriber_ = self.create_subscription(PointStamped, next_waypoint_topic, self.next_waypoint_callback, qos_profile)
+        self.next_waypoint_subscriber_ = self.create_subscription(PointStamped, next_wp_topic, self.next_waypoint_callback, qos_profile)
 
         # NOTE: self.cur_pos and self.cur_yaw is defined and set inside pose_callback
         self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
@@ -91,6 +91,8 @@ class RRTNode(Node):
             self.get_logger().error("Next waypoint not received yet.")
             return
 
+        # self.get_logger().info(f"Current position: {self.cur_pos}, Current yaw: {self.cur_yaw}, Next waypoint: {self.next_waypoint}")
+        
         # current position: self.cur_pos
         # current yaw: self.cur_yaw
         # occupancy grid: self.occupancy_grid

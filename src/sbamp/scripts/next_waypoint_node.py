@@ -24,13 +24,13 @@ class NextWaypoint(Node):
 
         self.declare_parameter('waypoint_file_name', 'waypoints_levine.csv')
         self.declare_parameter('pose_topic', '/ego_racecar/odom')
-        self.declare_parameter('next_waypoint_topic', '/next_waypoint')
+        self.declare_parameter('next_wp_topic', '/next_waypoint')
         self.declare_parameter('lookahead_distance', 0.8)
         self.declare_parameter('y_ego_threshold', 1.2)
         
         waypoint_file_name = self.get_parameter('waypoint_file_name').get_parameter_value().string_value
         pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
-        next_waypoint_topic = self.get_parameter('next_waypoint_topic').get_parameter_value().string_value
+        next_wp_topic = self.get_parameter('next_wp_topic').get_parameter_value().string_value
 
         self.lookahead_distance = self.get_parameter('lookahead_distance').get_parameter_value().double_value
         self.y_ego_threshold = self.get_parameter('y_ego_threshold').get_parameter_value().double_value
@@ -48,7 +48,7 @@ class NextWaypoint(Node):
 
         self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
 
-        self.next_waypoint_publisher_ = self.create_publisher(PointStamped, next_waypoint_topic, qos_profile)
+        self.next_waypoint_publisher_ = self.create_publisher(PointStamped, next_wp_topic, qos_profile)
 
     def pose_callback(self, msg):
         # Curret pose of the vehicle
