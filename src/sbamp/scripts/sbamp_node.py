@@ -2,8 +2,8 @@
 
 import rclpy
 from rclpy.node import Node
-from ..sbamp.ds_opt_py.lpv_opt.optimize_lpv_ds_from_data import optimize_lpv_ds_from_data
-from ..sbamp.ds_opt_py.lpv_opt.lpv_ds import lpv_ds
+from sbamp.ds_opt_py.lpv_opt.optimize_lpv_ds_from_data import optimize_lpv_ds_from_data
+from sbamp.ds_opt_py.lpv_opt.lpv_ds import lpv_ds
     
 
 
