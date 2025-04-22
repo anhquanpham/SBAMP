@@ -5,7 +5,8 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 
 from nav_msgs.msg import OccupancyGrid, Odometry
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PointStamped, PoseStamped
+from nav_msgs.msg import Path
 
 import numpy as np
 from transforms3d.euler import quat2euler
@@ -32,6 +33,7 @@ class RRTNode(Node):
         self.declare_parameter('pose_topic', '/ego_racecar/odom')
         self.declare_parameter('occupancy_grid_topic', '/occupancy_grid')
         self.declare_parameter('next_wp_topic', '/next_waypoint')
+        self.declare_parameter('rrt_path_topic', '/rrt_path')
 
         self.declare_parameter('map_height', 713)
         self.declare_parameter('map_width', 727)
@@ -41,6 +43,7 @@ class RRTNode(Node):
         pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
         occupancy_grid_topic = self.get_parameter('occupancy_grid_topic').get_parameter_value().string_value
         next_wp_topic = self.get_parameter('next_wp_topic').get_parameter_value().string_value
+        rrt_path_topic = self.get_parameter('rrt_path_topic').get_parameter_value().string_value
 
         self.map_height = self.get_parameter('map_height').get_parameter_value().integer_value
         self.map_width = self.get_parameter('map_width').get_parameter_value().integer_value
@@ -65,7 +68,12 @@ class RRTNode(Node):
         # NOTE: self.cur_pos and self.cur_yaw is defined and set inside pose_callback
         self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
 
+
+        self.path_publisher_ = self.create_publisher(Path, rrt_path_topic, qos_profile)
+
         self.step_size = 1.0  # Define the step size for steering
+
+
 
 
     def occupancy_grid_callback(self, occ_grid_msg):
@@ -125,7 +133,25 @@ class RRTNode(Node):
         path = self.rrt_star(self.cur_pos, goal)
 
         if path:
-            self.get_logger().info(f"Path found: {path}")
+            self.get_logger().info(f"Path found: {len(path)}")
+
+            # Publish the path as a Path message
+            path_msg = Path()
+            path_msg.header.frame_id = "map"
+            path_msg.header.stamp = self.get_clock().now().to_msg()
+            for point in path:
+                pose = PoseStamped()
+                pose.header.frame_id = "map"
+                pose.header.stamp = self.get_clock().now().to_msg()
+                pose.pose.position.x = point[0]
+                pose.pose.position.y = point[1]
+                pose.pose.position.z = 0.0
+                pose.pose.orientation.x = 0.0
+                pose.pose.orientation.y = 0.0
+                pose.pose.orientation.z = 0.0
+                pose.pose.orientation.w = 1.0
+                path_msg.poses.append(pose)
+            self.path_publisher_.publish(path_msg)
             
         # else:
         #     self.get_logger().error("Failed to find path!")
