@@ -133,7 +133,7 @@ class RRTNode(Node):
         path = self.rrt_star(self.cur_pos, goal)
 
         if path:
-            self.get_logger().info(f"Path found: {len(path)}")
+            # self.get_logger().info(f"Path found: {len(path)}")
 
             # Publish the path as a Path message
             path_msg = Path()
