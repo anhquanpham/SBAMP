@@ -6,8 +6,8 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 
-from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
+from nav_msgs.msg import Odometry, Path
+from geometry_msgs.msg import Pose, Quaternion, Vector3, Point, PoseStamped
 from visualization_msgs.msg import Marker, MarkerArray
 from std_msgs.msg import Header, ColorRGBA
 
@@ -28,18 +28,14 @@ class VisualizeNode(Node):
         self.get_logger().info("Visualize Node Launched")
 
         self.declare_parameter('waypoint_file_name', 'waypoints_levine.csv')
-        self.declare_parameter('pose_topic', '/ego_racecar/odom')
         self.declare_parameter('visualize_wp_topic', '/visualization/waypoints')
-        self.declare_parameter('visualize_next_wp_topic', '/visualization/next_waypoint')
-        self.declare_parameter('lookahead_distance', 0.8)
-        self.declare_parameter('y_ego_threshold', 1.2)
+        self.declare_parameter('rrt_path_topic', '/rrt_path')
+        self.declare_parameter('visualize_rrt_path_topic', '/visualization/rrt_path')
 
         waypoint_file_name = self.get_parameter('waypoint_file_name').get_parameter_value().string_value
-        pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
         visualize_wp_topic = self.get_parameter('visualize_wp_topic').get_parameter_value().string_value
-        visualize_next_wp_topic = self.get_parameter('visualize_next_wp_topic').get_parameter_value().string_value
-        self.lookahead_distance = self.get_parameter('lookahead_distance').get_parameter_value().double_value
-        self.y_ego_threshold = self.get_parameter('y_ego_threshold').get_parameter_value().double_value
+        rrt_path_topic = self.get_parameter('rrt_path_topic').get_parameter_value().string_value        
+        visualize_rrt_path_topic = self.get_parameter('visualize_rrt_path_topic').get_parameter_value().string_value
 
         package_share_dir = get_package_share_directory("sbamp")
 
@@ -53,11 +49,11 @@ class VisualizeNode(Node):
         )   
 
         # Subscribers
-        self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
+        self.rrt_path_subscriber_ = self.create_subscription(Path, rrt_path_topic, self.visualize_rrt_path, qos_profile)
 
         # Publishers
         self.waypoint_marker_publisher_ = self.create_publisher(MarkerArray, visualize_wp_topic, qos_profile)
-        self.next_waypoint_publisher_ = self.create_publisher(MarkerArray, visualize_next_wp_topic, qos_profile)
+        self.rrt_path_marker_publisher_ = self.create_publisher(MarkerArray, visualize_rrt_path_topic, qos_profile)
         
         # self.visualization_timer = self.create_timer(1, self.visualize_waypoints)
 
@@ -94,94 +90,59 @@ class VisualizeNode(Node):
         self.waypoint_marker_publisher_.publish(marker_array)
         self.get_logger().info("Waypoints Visualized")
 
-    def pose_callback(self, msg):
-        # Curret pose of the vehicle
-        pos_x = msg.pose.pose.position.x
-        pos_y = msg.pose.pose.position.y
-
-        qx = msg.pose.pose.orientation.x
-        qy = msg.pose.pose.orientation.y
-        qz = msg.pose.pose.orientation.z
-        qw = msg.pose.pose.orientation.w
-
-        euler = quat2euler([qw, qx, qy, qz])
-        yaw = euler[2]
-
-        wp_ego, wp_index =  self.find_lookup_waypoint(pos_x, pos_y, yaw)
-
-        next_wp_index = wp_index + 1
-        if wp_index == len(self.waypoints)-1:
-            next_wp_index = 0
-
-        wp_ego_next = self.waypoints[next_wp_index]
-
-        self.visualize_next_waypoint(wp_ego_next)
-
-    def find_lookup_waypoint(self, pos_x, pos_y, yaw):
-
-        waypoints_ego = []
-        distances = []
-        indices = []
-
-        for i, waypoint in enumerate(self.waypoints):
-            wp_x, wp_y, wp_yaw, _, _, _, _ = waypoint
-            
-            dx = wp_x - pos_x
-            dy = wp_y - pos_y
-
-            distance = np.sqrt(dx**2 + dy**2)
-
-            x_ego = dx * np.cos(-yaw) - dy * np.sin(-yaw)
-            y_ego = dx * np.sin(-yaw) + dy * np.cos(-yaw)
-
-            if x_ego >= 0 and abs(y_ego) <= self.y_ego_threshold:
-                waypoints_ego.append((wp_x, wp_y))
-                distances.append(distance)
-                indices.append(i)
-
-
-        distances = np.array(distances)
-        waypoints_ego = np.array(waypoints_ego)
-
-        if len(waypoints_ego) != 0:
-            
-            distances[distances < self.lookahead_distance] = np.inf
-            min_index = np.argmin(distances)
-
-            self.prev_valid_index = min_index
-            self.prev_ego_waypoints = waypoints_ego
-
-            return waypoints_ego[min_index], indices[min_index]
-        
-        else:
-            return self.prev_ego_waypoints[self.prev_valid_index], self.prev_valid_index
-
-    def visualize_next_waypoint(self, wp_ego_next):
-        x, y = wp_ego_next[:2]
-
-        cur_marker_array = MarkerArray()
+    def visualize_rrt_path(self, msg):
+        # self.get_logger().info("RRT Path Received")
 
         marker = Marker()
         marker.header = Header()
         marker.header.frame_id = "map"
         marker.header.stamp = self.get_clock().now().to_msg()
-
-        marker.id = 0
-        marker.type = Marker.SPHERE
+        marker.id = 4200
+        marker.type = Marker.LINE_STRIP
         marker.action = Marker.ADD
 
-        marker.pose = Pose()
-        marker.pose.position = Point(x=x, y=y, z=0.0)
-        marker.pose.orientation = Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)
+        marker.scale = Vector3(x=0.1, y=0.0, z=0.0)
+        marker.color = ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0)
 
-        marker.scale = Vector3(x=0.2, y=0.2, z=0.2)
-        marker.color = ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0)
+        for i, pose in enumerate(msg.poses):
+            p = Point()
+            p.x = pose.pose.position.x
+            p.y = pose.pose.position.y
+            p.z = 0.1
+            marker.points.append(p)
+        
+        arrow_marker = Marker()
+        arrow_marker.header = marker.header
+        arrow_marker.id = 4201
+        arrow_marker.type = Marker.ARROW
+        arrow_marker.action = Marker.ADD
+        arrow_marker.scale = Vector3(x=0.3, y=0.15, z=0.1)
+        arrow_marker.color = ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0)
 
-        marker.lifetime.sec = 0
+        if len(msg.poses) > 0:
 
-        cur_marker_array.markers.append(marker)
+            p1 = msg.poses[-2].pose.position
+            p2 = msg.poses[-1].pose.position
 
-        self.next_waypoint_publisher_.publish(cur_marker_array)
+            arrow_marker.pose.position.x = p2.x
+            arrow_marker.pose.position.y = p2.y
+            arrow_marker.pose.position.z = 0.2
+
+            dx = p2.x - p1.x
+            dy = p2.y - p1.y
+            angle = np.arctan2(dy, dx)
+
+            arrow_marker.pose.orientation.z = np.sin(angle / 2.0)
+            arrow_marker.pose.orientation.w = np.cos(angle / 2.0)
+
+        marker_array = MarkerArray()
+        marker_array.markers.append(marker)
+        if len(msg.poses) > 2:
+            marker_array.markers.append(arrow_marker)
+        
+        self.rrt_path_marker_publisher_.publish(marker_array)
+        # self.get_logger().info("RRT Path Visualized")      
+
 
 def main(args=None):
     rclpy.init(args=args)
