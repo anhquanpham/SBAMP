@@ -126,10 +126,11 @@ class RRTNode(Node):
 
         if path:
             self.get_logger().info(f"Path found: {path}")
-        else:
-            self.get_logger().error("Failed to find path!")
+            
+        # else:
+        #     self.get_logger().error("Failed to find path!")
 
-    def rrt_star(self, start, goal, max_iter=10000, step_size=1.0, goal_threshold=0.5):
+    def rrt_star(self, start, goal, max_iter=10, step_size=1.0, goal_threshold=0.5):
         # Initialize the tree with the start node
         tree = [RRTTreeNode(start)]
         self.goal_reached = False
@@ -138,18 +139,34 @@ class RRTNode(Node):
             # Sample a random point
             random_point = self.sample_random_point(goal)
 
+            # self.get_logger().info(f"Random point sampled: {random_point}")
+
             # Find the nearest node in the tree
             nearest_node = self.nearest_node(tree, random_point)
 
+            # self.get_logger().info(f"Nearest node found: {nearest_node.position}")
+
             # Steer towards the random point from nearest node
             new_node = self.steer(nearest_node, random_point, step_size)
+
+            # self.get_logger().info(f"New node created: {new_node.position}")
 
             # Check if the new node is valid (i.e., no collision)
             if not self.is_valid(new_node.position):
                 continue
 
-            # Rewire the tree to optimize the path
+            # self.get_logger().info(f"New node is valid: {new_node.position}")
+
+            # # Rewire the tree to optimize the path
+
+            old_tree = tree.copy()
+
             self.rewire_tree(tree, new_node, step_size)
+
+            # if old_tree == tree:
+            #     self.get_logger().info(f"New node is not rewired: {new_node.position}")
+            # else:
+            #     self.get_logger().info(f"New node rewired: {new_node.position}")
 
             # Check if the goal is reached
             if np.linalg.norm(new_node.position - goal) < goal_threshold:
@@ -157,10 +174,12 @@ class RRTNode(Node):
                 return self.extract_path(new_node)
 
             tree.append(new_node)
-        print("Goal wasnt reached")    
+
+        # self.get_logger().info("Goal wasnt reached") 
+            
         return None  # Return None if the goal is not reached
 
-    def sample_random_point(self, goal, bias_factor=0.7):
+    def sample_random_point(self, goal, bias_factor=0.9):
         """
         Sample a random point in the space with a bias towards the goal.
         `goal` is the next waypoint (the goal position).
