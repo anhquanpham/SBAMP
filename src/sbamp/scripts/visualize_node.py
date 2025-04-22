@@ -6,8 +6,8 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 
-from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
+from nav_msgs.msg import Odometry, Path
+from geometry_msgs.msg import Pose, Quaternion, Vector3, Point, PoseStamped
 from visualization_msgs.msg import Marker, MarkerArray
 from std_msgs.msg import Header, ColorRGBA
 
@@ -29,9 +29,11 @@ class VisualizeNode(Node):
 
         self.declare_parameter('waypoint_file_name', 'waypoints_levine.csv')
         self.declare_parameter('visualize_wp_topic', '/visualization/waypoints')
+        self.declare_parameter('rrt_path_topic', '/rrt_path')
 
         waypoint_file_name = self.get_parameter('waypoint_file_name').get_parameter_value().string_value
         visualize_wp_topic = self.get_parameter('visualize_wp_topic').get_parameter_value().string_value
+        rrt_path_topic = self.get_parameter('rrt_path_topic').get_parameter_value().string_value        
 
         package_share_dir = get_package_share_directory("sbamp")
 
@@ -45,6 +47,7 @@ class VisualizeNode(Node):
         )   
 
         # Subscribers
+        self.rrt_path_subscriber_ = self.create_subscription(Path, rrt_path_topic, self.visualize_rrt_path, qos_profile)
 
         # Publishers
         self.waypoint_marker_publisher_ = self.create_publisher(MarkerArray, visualize_wp_topic, qos_profile)
@@ -84,6 +87,9 @@ class VisualizeNode(Node):
         self.waypoint_marker_publisher_.publish(marker_array)
         self.get_logger().info("Waypoints Visualized")
 
+    def visualize_rrt_path(self, msg):
+        self.get_logger().info("RRT Path Received")
+        
 def main(args=None):
     rclpy.init(args=args)
     node = VisualizeNode()
