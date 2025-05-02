@@ -2,10 +2,14 @@
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSProfile
+
 from sbamp.ds_opt_py.lpv_opt.optimize_lpv_ds_from_data import optimize_lpv_ds_from_data
 from sbamp.ds_opt_py.lpv_opt.lpv_ds import lpv_ds
     
+from nav_msgs.msg import Path
 
+import numpy as np
 
 from dataclasses import dataclass
 
@@ -26,39 +30,38 @@ class EstimationOptions:
 
 from sbamp.ds_opt_py.sbamp_header import demo
 
+from sbamp.sed import learn_seds, query_velocity
+
+
 class SBAMPNode(Node):
     def __init__(self):
         super().__init__("sbamp_node")
         self.get_logger().info("Python sbamp_node has been started.")
-        self.est_options = EstimationOptions(
-            type=0,
-            do_plots=True,
-            sub_sample=2,
-            estimate_l=True,
-            l_sensitivity=2.0
-        )
+
+        self.declare_parameter('rrt_path_topic', '/rrt_path')
+
+        rrt_path_topic = self.get_parameter('rrt_path_topic').get_parameter_value().string_value
 
 
-    def optimize_lpv_ds(self):
-        A, b, P, gmm= optimize_lpv_ds_from_data(
-            Data=None,  # Placeholder for actual data
-            attractor=None,  # Placeholder for actual attractor
-            ctr_type=0,  #0 for no P shaping, 1 for P shaping
-            est_options=self.est_options,
-            P=None,  # Placeholder for actual P matrix
-            symm_constr=True  # Placeholder for symmetry constraint
-        )
-        return A, b, P, gmm
+        qos_profile = QoSProfile(depth=10)
 
-    def lpv_ds(self, x):
-        A_g, b_g, P, ds_gmm = self.optimize_lpv_ds()
-        x_dot = lpv_ds(x=x, ds_gmm=ds_gmm, A_g=A_g, b_g=b_g)
-        return x_dot
-    
+        self.rrt_path_subscriber_ = self.create_publisher(Path, rrt_path_topic, self.rrt_path_callback, qos_profile)
 
-        # Call the demo function from sbamp_header.py
-        demo_result = demo()
-        self.get_logger().info(f"Demo result: {demo_result}")
+    def rrt_path_callback(self, msg):
+        self.get_logger().info(f"Received RRT path message: {msg}")
+
+        # # Extract positions and velocities from the Path message
+        # positions = np.array([[pose.pose.position.x, pose.pose.position.y] for pose in msg.poses])
+        # velocities = np.array([[pose.pose.orientation.x, pose.pose.orientation.y] for pose in msg.poses])
+
+        # # Learn SEDS parameters
+        # gmm, stable_A_matrices, target = learn_seds(positions, velocities)
+
+        # # Query velocity for a specific position
+        # query_pos = np.array([0.5, 0.5])
+        # velocity = query_velocity(gmm, stable_A_matrices, query_pos)
+        # self.get_logger().info(f"Queried velocity: {velocity}")
+
 
 def main(args=None):
     rclpy.init(args=args)
