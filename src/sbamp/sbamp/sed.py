@@ -53,18 +53,6 @@ def learn_seds(start,  goal, n_components=2, num_interp_points=20):
     return gmm, stable_A_matrices, goal
 
 def query_velocity(gmm, stable_A_matrices, target, query_pos):
-    """
-    Query velocity at current position using learned SEDS model.
-    
-    Args:
-        gmm: Fitted Gaussian Mixture Model from learn_seds
-        stable_A_matrices: Stable A matrices from learn_seds
-        target: Goal point from learn_seds
-        query_pos: Current position [x, y]
-        
-    Returns:
-        velocity: Computed velocity vector [vx, vy]
-    """
     # Create 4D query vector with zero velocity placeholder
     query_4d = np.hstack((query_pos, [0, 0]))
     
@@ -76,8 +64,11 @@ def query_velocity(gmm, stable_A_matrices, target, query_pos):
     for k, gamma_k in enumerate(responsibilities):
         displacement = query_pos - target
         velocity += gamma_k * (stable_A_matrices[k] @ displacement)
-    
-    return velocity
+        
+    norm = np.linalg.norm(velocity)    
+    return velocity / norm
+
+
 
 # Example usage and visualization
 if __name__ == "__main__":
