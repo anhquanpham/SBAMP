@@ -7,9 +7,10 @@ from rclpy.qos import QoSProfile
 from sbamp.ds_opt_py.lpv_opt.optimize_lpv_ds_from_data import optimize_lpv_ds_from_data
 from sbamp.ds_opt_py.lpv_opt.lpv_ds import lpv_ds
     
-from nav_msgs.msg import Path
+from nav_msgs.msg import Path, Odometry
 
 import numpy as np
+from transforms3d.euler import quat2euler
 
 from dataclasses import dataclass
 
@@ -39,20 +40,39 @@ class SBAMPNode(Node):
         self.get_logger().info("Python sbamp_node has been started.")
 
         self.declare_parameter('rrt_path_topic', '/rrt_path')
+        self.declare_parameter('pose_topic', '/ego_racecar/odom')
 
         rrt_path_topic = self.get_parameter('rrt_path_topic').get_parameter_value().string_value
-
+        pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
 
         qos_profile = QoSProfile(depth=10)
 
-        self.rrt_path_subscriber_ = self.create_publisher(Path, rrt_path_topic, self.rrt_path_callback, qos_profile)
+        # NOTE: self.cur_pos and self.cur_yaw is defined and set inside pose_callback
+        self.pose_subscriber_ = self.create_subscription(Odometry, pose_topic, self.pose_callback, qos_profile)
+
+        self.rrt_path_subscriber_ = self.create_subscription(Path, rrt_path_topic, self.rrt_path_callback, qos_profile)
+
+    def pose_callback(self, pose_msg):
+        self.cur_pos = np.array([pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y])
+        self.cur_yaw = quat2euler([pose_msg.pose.pose.orientation.w,
+                                        pose_msg.pose.pose.orientation.x,
+                                        pose_msg.pose.pose.orientation.y,
+                                        pose_msg.pose.pose.orientation.z])[2]
 
     def rrt_path_callback(self, msg):
-        self.get_logger().info(f"Received RRT path message: {msg}")
+        self.get_logger().info(f"Received RRT path message: {len(msg.poses)} poses")
 
-        # # Extract positions and velocities from the Path message
-        # positions = np.array([[pose.pose.position.x, pose.pose.position.y] for pose in msg.poses])
-        # velocities = np.array([[pose.pose.orientation.x, pose.pose.orientation.y] for pose in msg.poses])
+        # Extract positions from the Path message
+        positions = np.array([[pose.pose.position.x, pose.pose.position.y] for pose in msg.poses])
+
+        if not hasattr(self, 'cur_pos'):
+            self.get_logger().error("Current position not received yet.")
+            return
+        if not hasattr(self, 'cur_yaw'):
+            self.get_logger().error("Current yaw not received yet.")
+            return
+
+
 
         # # Learn SEDS parameters
         # gmm, stable_A_matrices, target = learn_seds(positions, velocities)
