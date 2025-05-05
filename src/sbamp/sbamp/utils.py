@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+from scipy.interpolate import CubicSpline
 
 def load_waypoints(waypoint_file_path):
     waypoints = []
@@ -18,6 +19,36 @@ def load_waypoints(waypoint_file_path):
                 waypoints.append((x, y, yaw, qw, qx, qy, qz))
     except Exception as e:
         print(f"Failed to read waypoints: {e}")
+
+    return waypoints
+
+def spline_interpolate(waypoints, spline_num):
+    """
+    Interpolate the waypoints using cubic splines
+    :param waypoints: numpy array of waypoints
+    :return: numpy array of interpolated waypoints
+    """
+
+    x = waypoints[:, 0]
+    y = waypoints[:, 1]
+
+    t = np.cumsum(np.sqrt(np.sum(np.diff(waypoints, axis=0)**2, axis=1)))
+    t = np.insert(t, 0, 0)  
+
+    epsilon = 1e-6
+    for i in range(1, len(t)):
+        if t[i] <= t[i-1]:
+            t[i] = t[i-1] + epsilon
+
+    # Cubic spline interpolation
+    cs_x = CubicSpline(t, x)
+    cs_y = CubicSpline(t, y)
+
+    # Generate new waypoints
+    t_new = np.linspace(0, t[-1], num=spline_num)  # 100 points for smoothness
+    x_new = cs_x(t_new)
+    y_new = cs_y(t_new)
+    waypoints = np.column_stack((x_new, y_new))
 
     return waypoints
 
