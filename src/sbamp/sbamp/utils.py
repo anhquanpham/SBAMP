@@ -16,7 +16,7 @@ def load_waypoints(waypoint_file_path):
                 qx = float(row[4])
                 qy = float(row[5])
                 qz = float(row[6])
-                waypoints.append((x, y, yaw, qw, qx, qy, qz))
+                waypoints.append([x, y, yaw, qw, qx, qy, qz])
     except Exception as e:
         print(f"Failed to read waypoints: {e}")
 

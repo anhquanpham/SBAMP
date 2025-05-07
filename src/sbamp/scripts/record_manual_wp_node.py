@@ -86,21 +86,6 @@ class RecodManualWPNode(Node):
         self.get_logger().info("Closing waypoint file")
         self.waypoint_file.close()
 
-        if self.spline_waypoints:
-            raw_waypoints = load_waypoints(self.waypoint_file_path)
-            spline_waypoints = spline_interpolate(raw_waypoints, self.spline_num)
-
-            with open(self.waypoint_file_path, 'w') as f:
-                f.write("x,y,yaw,qw,qx,qy,qz\n")
-                for wp in spline_waypoints:
-                    x, y = wp[0], wp[1]
-                    yaw = 0.0
-                    qw, qx, qy, qz = 1.0, 0.0, 0.0, 0.0
-                    f.write(f"{x},{y},{yaw},{qw},{qx},{qy},{qz}\n")
-        
-        self.get_logger().info("Waypoint file closed successfully")
-
-
 def main(args=None):
     rclpy.init(args=args)
     node = RecodManualWPNode()
