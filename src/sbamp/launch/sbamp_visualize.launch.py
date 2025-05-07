@@ -31,6 +31,9 @@ def generate_launch_description():
 
     expand_occ_size = 2
 
+    kp = 1.0
+    kv = 1.0
+
     return LaunchDescription([
         # SBAMP node
         Node(
@@ -42,6 +45,8 @@ def generate_launch_description():
                 {"rrt_path_topic": rrt_path_topic},
                 {"pose_topic": pose_topic},
                 {"drive_topic": drive_topic},
+                {"kv": kv},
+                {"kp": kp},
             ]
         ),
         # Visualize node

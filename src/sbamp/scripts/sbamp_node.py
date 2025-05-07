@@ -43,11 +43,16 @@ class SBAMPNode(Node):
         self.declare_parameter('rrt_path_topic', '/rrt_path')
         self.declare_parameter('pose_topic', '/ego_racecar/odom')
         self.declare_parameter('drive_topic', '/drive')
+        self.declare_parameter('kv', 1.0)
+        self.declare_parameter('kp', 1.0)
 
 
         rrt_path_topic = self.get_parameter('rrt_path_topic').get_parameter_value().string_value
         pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
         drive_topic = self.get_parameter('drive_topic').get_parameter_value().string_value
+
+        self.kv = self.get_parameter('kv').get_parameter_value().double_value
+        self.kp = self.get_parameter('kp').get_parameter_value().double_values
 
         qos_profile = QoSProfile(depth=10)
 
@@ -93,8 +98,8 @@ class SBAMPNode(Node):
         steering_angle = (steering_angle + np.pi) % (2 * np.pi) - np.pi
         
         drive_msg = AckermannDriveStamped()
-        drive_msg.drive.speed = speed
-        drive_msg.drive.steering_angle = steering_angle
+        drive_msg.drive.speed = self.kv * speed
+        drive_msg.drive.steering_angle = self.kp * steering_angle
         self.drive_publisher_.publish(drive_msg)
         self.get_logger().info(f"Speed={speed}, Steering Angle={steering_angle}", throttle_duration_sec=1.0)
 
