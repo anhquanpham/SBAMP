@@ -50,6 +50,9 @@ class NextWaypoint(Node):
 
         self.next_waypoint_publisher_ = self.create_publisher(PointStamped, next_wp_topic, qos_profile)
 
+        self.prev_valid_index = 0
+        self.prev_ego_waypoints = np.array([[0, 0]])
+
     def pose_callback(self, msg):
         # Curret pose of the vehicle
         pos_x = msg.pose.pose.position.x

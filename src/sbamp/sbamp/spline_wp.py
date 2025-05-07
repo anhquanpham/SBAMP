@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     waypoints = load_waypoints(input_file)
 
-    spline_wp = spline_interpolate(waypoints, 50)
+    spline_wp = spline_interpolate(waypoints, 80)
 
     with open(output_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)

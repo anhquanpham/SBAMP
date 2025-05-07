@@ -78,7 +78,7 @@ class SBAMPNode(Node):
                                         pose_msg.pose.pose.orientation.z])[2]
         
         if not hasattr(self, 'rrt_waypoints'):
-            self.get_logger().error("RRT path not received yet.")
+            self.get_logger().error("RRT path not received yet.", throttle_duration_sec=1.0)
             return
         
         velocity = query_velocity(self.gmm, self.stable_A_matrices, self.target, self.cur_pos)
