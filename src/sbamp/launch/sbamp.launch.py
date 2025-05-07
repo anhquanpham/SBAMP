@@ -41,13 +41,6 @@ def generate_launch_description():
                 {"drive_topic": drive_topic},
             ]
         ),
-        # # C++ node
-        # Node(
-        #     package="sbamp",
-        #     executable="sbamp_node",
-        #     name="sbamp_node",
-        #     output="screen",
-        # )
         # RRT node
         Node(
             package="sbamp",
