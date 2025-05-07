@@ -19,7 +19,6 @@ def generate_launch_description():
     drive_topic = "/drive"
     
     visualize_wp_topic = "/visualization/waypoints"
-    visualize_next_wp_topic = "/visualization/next_waypoint"
     visualize_rrt_path_topic = "/visualization/rrt_path"
 
     lookahead_distance = 0.8

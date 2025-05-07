@@ -26,7 +26,7 @@ def generate_launch_description():
     map_resolution = 0.05
     map_origin = [-20.2, -5.68]
 
-    expand_occ_size = 5
+    expand_occ_size = 2
 
     return LaunchDescription([
         # Python node
