@@ -5,8 +5,13 @@ def generate_launch_description():
 
     waypoint_file_name = "waypoints_levine.csv"
     
-    scan_topic = "/scan"
+    # Simulation
     pose_topic = "/ego_racecar/odom"
+
+    # Car
+    # pose_topic = "/pf/odom/pose"
+    
+    scan_topic = "/scan"
     next_wp_topic = "/next_waypoint"
     original_map_topic = "/map"
     occupancy_grid_topic = "/occupancy_grid"
