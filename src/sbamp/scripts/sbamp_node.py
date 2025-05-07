@@ -91,14 +91,12 @@ class SBAMPNode(Node):
 
         # Normalize steering angle to [-pi, pi]
         steering_angle = (steering_angle + np.pi) % (2 * np.pi) - np.pi
-
-        self.get_logger().info(f"Speed: {speed}, Steering Angle: {steering_angle}")
         
         drive_msg = AckermannDriveStamped()
         drive_msg.drive.speed = speed
         drive_msg.drive.steering_angle = steering_angle
         self.drive_publisher_.publish(drive_msg)
-        self.get_logger().info(f"Published drive command: Speed={speed}, Steering Angle={steering_angle}")
+        self.get_logger().info(f"Speed={speed}, Steering Angle={steering_angle}", throttle_duration_sec=1.0)
 
 
 def main(args=None):

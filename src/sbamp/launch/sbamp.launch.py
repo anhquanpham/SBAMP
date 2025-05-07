@@ -10,6 +10,8 @@ def generate_launch_description():
     next_wp_topic = "/next_waypoint"
     original_map_topic = "/map"
     occupancy_grid_topic = "/occupancy_grid"
+    rrt_path_topic = "/rrt_path"
+    drive_topic = "/drive"
     
     lookahead_distance = 0.8
     y_ego_threshold = 1.2
@@ -28,6 +30,11 @@ def generate_launch_description():
             executable="sbamp_node.py",
             name="sbamp_node",
             output="screen",
+            parameters=[
+                {"rrt_path_topic": rrt_path_topic},
+                {"pose_topic": pose_topic},
+                {"drive_topic": drive_topic},
+            ]
         ),
         # # C++ node
         # Node(
@@ -46,22 +53,7 @@ def generate_launch_description():
                 {"pose_topic": pose_topic},
                 {"occupancy_grid_topic": occupancy_grid_topic},
                 {"next_wp_topic": next_wp_topic},
-                {"map_height": map_height},
-                {"map_width": map_width},
-                {"map_resolution": map_resolution},
-                {"map_origin": map_origin},
-            ]
-        ),
-        # RRT node
-        Node(
-            package="sbamp",
-            executable="rrt_node.py",
-            name="rrt_node",
-            output="screen",
-            parameters=[
-                {"pose_topic": pose_topic},
-                {"occupancy_grid_topic": occupancy_grid_topic},
-                {"next_wp_topic": next_wp_topic},
+                {"rrt_path_topic": rrt_path_topic},
                 {"map_height": map_height},
                 {"map_width": map_width},
                 {"map_resolution": map_resolution},

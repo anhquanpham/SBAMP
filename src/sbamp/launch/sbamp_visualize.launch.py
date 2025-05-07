@@ -7,12 +7,16 @@ def generate_launch_description():
     
     scan_topic = "/scan"
     pose_topic = "/ego_racecar/odom"
-    visualize_wp_topic = "/visualization/waypoints"
-    visualize_next_wp_topic = "/visualization/next_waypoint"
     next_wp_topic = "/next_waypoint"
     original_map_topic = "/map"
     occupancy_grid_topic = "/occupancy_grid"
+    rrt_path_topic = "/rrt_path"
+    drive_topic = "/drive"
     
+    visualize_wp_topic = "/visualization/waypoints"
+    visualize_next_wp_topic = "/visualization/next_waypoint"
+    visualize_rrt_path_topic = "/visualization/rrt_path"
+
     lookahead_distance = 0.8
     y_ego_threshold = 1.2
     
@@ -21,7 +25,7 @@ def generate_launch_description():
     map_resolution = 0.05
     map_origin = [-20.2, -5.68]
 
-    expand_occ_size = 5
+    expand_occ_size = 2
 
     return LaunchDescription([
         # SBAMP node
@@ -30,6 +34,11 @@ def generate_launch_description():
             executable="sbamp_node.py",
             name="sbamp_node",
             output="screen",
+            parameters=[
+                {"rrt_path_topic": rrt_path_topic},
+                {"pose_topic": pose_topic},
+                {"drive_topic": drive_topic},
+            ]
         ),
         # Visualize node
         Node(
@@ -39,11 +48,9 @@ def generate_launch_description():
             output="screen",
             parameters=[
                 {"waypoint_file_name": waypoint_file_name},
-                {"pose_topic": pose_topic},
                 {"visualize_wp_topic": visualize_wp_topic},
-                {"visualize_next_wp_topic": visualize_next_wp_topic},
-                {"lookahead_distance": lookahead_distance},
-                {"y_ego_threshold": y_ego_threshold}
+                {"rrt_path_topic": rrt_path_topic},
+                {"visualize_rrt_path_topic": visualize_rrt_path_topic},   
             ]
         ),
         # RRT node
@@ -56,6 +63,7 @@ def generate_launch_description():
                 {"pose_topic": pose_topic},
                 {"occupancy_grid_topic": occupancy_grid_topic},
                 {"next_wp_topic": next_wp_topic},
+                {"rrt_path_topic": rrt_path_topic},
                 {"map_height": map_height},
                 {"map_width": map_width},
                 {"map_resolution": map_resolution},
