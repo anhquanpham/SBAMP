@@ -52,10 +52,3 @@ To run with visualization:
 ```bash
 /SBAMP$ ros2 launch sbamp sbamp_visualization.launch.py 
 ```
-
-From Figueroa Robotics Lab @ Penn:
-
-```bash
-/SBAMP/src/sbamp/sbamp$ git clone https://github.com/Shreyas0812/ds_opt_py.git
-/SBAMP/src/sbamp/sbamp/ds-opt-py$ git clone https://github.com/Shreyas0812/phys_gmm_python.git
-```

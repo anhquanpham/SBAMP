@@ -3,34 +3,12 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-
-from sbamp.ds_opt_py.lpv_opt.optimize_lpv_ds_from_data import optimize_lpv_ds_from_data
-from sbamp.ds_opt_py.lpv_opt.lpv_ds import lpv_ds
     
 from nav_msgs.msg import Path, Odometry
 from ackermann_msgs.msg import AckermannDriveStamped
 
 import numpy as np
 from transforms3d.euler import quat2euler
-
-from dataclasses import dataclass
-
-@dataclass
-class EstimationOptions:
-    # Required parameters
-    type: int            # 0=Non-parametric, 1=?, 2=?
-    do_plots: bool       # Whether to generate visualizations
-    
-    # Optional parameters with defaults
-    sub_sample: int = 1       # Subsampling factor (1=no subsampling)
-    samplerIter: int = 0      # Number of sampler iterations
-    l_sensitivity: float = 0  # Length-scale sensitivity factor
-    estimate_l: bool = False  # Whether to auto-estimate length-scale
-    length_scale: float = 1.0 # Manual length-scale (if estimate_l=False)
-
-
-
-from sbamp.ds_opt_py.sbamp_header import demo
 
 from sbamp.sed import learn_seds, query_velocity
 
@@ -46,13 +24,12 @@ class SBAMPNode(Node):
         self.declare_parameter('kv', 1.0)
         self.declare_parameter('kp', 1.0)
 
-
         rrt_path_topic = self.get_parameter('rrt_path_topic').get_parameter_value().string_value
         pose_topic = self.get_parameter('pose_topic').get_parameter_value().string_value
         drive_topic = self.get_parameter('drive_topic').get_parameter_value().string_value
 
         self.kv = self.get_parameter('kv').get_parameter_value().double_value
-        self.kp = self.get_parameter('kp').get_parameter_value().double_values
+        self.kp = self.get_parameter('kp').get_parameter_value().double_value
 
         qos_profile = QoSProfile(depth=10)
 
