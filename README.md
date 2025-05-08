@@ -78,6 +78,8 @@ https://github.com/user-attachments/assets/24c63235-09f2-482f-8d48-276d0a401b4b
 
 ### Poster
 
+<img src="path/to/your/poster.png" alt="SBAMP Poster" width="800"/>
+
 
 
 
