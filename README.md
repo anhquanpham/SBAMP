@@ -52,3 +52,8 @@ To run with visualization:
 ```bash
 /SBAMP$ ros2 launch sbamp sbamp_visualization.launch.py 
 ```
+
+### Video 
+
+<video src="https://github.com/Shreyas0812/SBAMP/blob/main/rrt_pertubation.mkv" width="640" height="360" controls></video>
+
