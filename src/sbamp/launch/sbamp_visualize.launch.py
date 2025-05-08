@@ -20,6 +20,7 @@ def generate_launch_description():
     
     visualize_wp_topic = "/visualization/waypoints"
     visualize_rrt_path_topic = "/visualization/rrt_path"
+    visualize_sed_path_topic = "/visualization/sed_path"
 
     lookahead_distance = 0.8
     y_ego_threshold = 1.2
@@ -60,6 +61,7 @@ def generate_launch_description():
                 {"visualize_wp_topic": visualize_wp_topic},
                 {"rrt_path_topic": rrt_path_topic},
                 {"visualize_rrt_path_topic": visualize_rrt_path_topic},   
+                {"visualize_sed_path_topic": visualize_sed_path_topic},
             ]
         ),
         # RRT node

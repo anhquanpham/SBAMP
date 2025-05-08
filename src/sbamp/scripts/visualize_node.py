@@ -270,7 +270,7 @@ class VisualizeNode(Node):
         marker_array.markers.append(goal_marker)
 
         self.sed_path_marker_publisher_.publish(marker_array)
-        self.get_logger().info("SED Path Visualized")
+        # self.get_logger().info("SED Path Visualized")
      
 
 def main(args=None):
