@@ -55,6 +55,6 @@ To run with visualization:
 
 ### Video 
 
-<video src="https://github.com/Shreyas0812/SBAMP/raw/main/rrt_pertubation.mp4" width="640" height="360" controls></video>
+file:///home/shreyas/Documents/MEAM6230_LCARR/SBAMP/rrt_pertubation.mp4
 
 
