@@ -40,6 +40,7 @@ install(PROGRAMS
   scripts/occupancy_grid_node.py
   scripts/next_waypoint_node.py
   scripts/record_manual_wp_node.py
+  scripts/rrt_drive_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
