@@ -53,6 +53,18 @@ To run with visualization:
 /SBAMP$ ros2 launch sbamp sbamp_visualization.launch.py 
 ```
 
+To run without visualization:
+
+```bash
+/SBAMP$ ros2 launch sbamp sbamp.launch.py 
+```
+
+To run only rrt:
+
+```bash
+/SBAMP$ ros2 launch sbamp only_rrt.launch.py 
+```
+
 ### Video 
 
 https://github.com/user-attachments/assets/24c63235-09f2-482f-8d48-276d0a401b4b
