@@ -17,6 +17,8 @@ git clone --recurse-submodules https://github.com/Shreyas0812/SBAMP.git
 $ cd SBAMP
 ```
 
+#### To Launch the Roboracer Simulator
+
 ```bash
 $ source /opt/ros/humble/setup.bash
 $ colcon build
@@ -27,6 +29,8 @@ $ ros2 launch f1tenth_gym_ros gym_bridge_launch.py
 ```bash
 /SBAMP/src/sbamp/scripts$ chmod +x sbamp_node.py 
 ```
+
+#### To Launch SBAMP:
 
 ```bash
 /SBAMP$ colcon build
@@ -46,6 +50,8 @@ Visualization Node:
 ```bash
 /SBAMP/src/sbamp/scripts$ chmod +x visualization_node.py 
 ```
+
+#### Other Launch Options:
 
 To run with visualization:
 
