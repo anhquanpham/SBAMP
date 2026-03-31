@@ -1,10 +1,5 @@
 # SBAMP: Sampling Based Adaptive Motion Planning
 
-
-### Poster:
-
-<img src="SBAMP-Official.png" alt="SBAMP Poster" width="800"/>
-
 ### Steps to run:
 
 Note: Make sure you are at the correct location as given by the text before `$`
