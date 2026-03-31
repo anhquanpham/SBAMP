@@ -1,5 +1,7 @@
 # SBAMP: Sampling Based Adaptive Motion Planning
 
+[![SBAMP on RoboRacer](https://img.youtube.com/vi/mtq3qeJFjX0/0.jpg "SBAMP on RoboRacer")](https://www.youtube.com/watch?v=mtq3qeJFjX0 "SBAMP on RoboRacer")
+
 ### Steps to run:
 
 Note: Make sure you are at the correct location as given by the text before `$`
