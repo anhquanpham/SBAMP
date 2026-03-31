@@ -1,6 +1,10 @@
 # SBAMP: Sampling Based Adaptive Motion Planning
 
-[![SBAMP on RoboRacer](https://img.youtube.com/vi/mtq3qeJFjX0/0.jpg "SBAMP on RoboRacer")](https://www.youtube.com/watch?v=mtq3qeJFjX0 "SBAMP on RoboRacer")
+
+
+https://github.com/user-attachments/assets/281e9b9a-5595-4d75-b756-ef5f865547e1
+
+
 
 ### Steps to run:
 
